@@ -63,7 +63,7 @@ int main(int argc, const char *argv[])
         DataFrame frame;
         frame.cameraImg = imgGray;
         dataBuffer.push_back(frame);
-        cout<< "databuffer size: " << dataBuffer.size();
+        cout << "databuffer size: " << dataBuffer.size();
         if (dataBuffer.size() > dataBufferSize)
         {
             dataBuffer.erase(dataBuffer.begin());
@@ -78,7 +78,7 @@ int main(int argc, const char *argv[])
         // extract 2D keypoints from current image
         vector<cv::KeyPoint> keypoints; // create empty feature list for current image
         // string detectorType = "SHITOMASI";
-        string detectorType = "HARRIS";        
+        string detectorType = "HARRIS";
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
@@ -92,17 +92,69 @@ int main(int argc, const char *argv[])
         {
             detKeypointsHarris(keypoints, imgGray, false);
         }
+        else // anything else, call the mdern implementations
+        {
+            detKeypointsModern(keypoints, imgGray, detectorType, false);
+        }
         //// EOF STUDENT ASSIGNMENT
 
         //// STUDENT ASSIGNMENT
         //// TASK MP.3 -> only keep keypoints on the preceding vehicle
 
         // only keep keypoints on the preceding vehicle
+
         bool bFocusOnVehicle = true;
-        cv::Rect vehicleRect(535, 180, 180, 150);
+        cv::Rect vehicleRect(535, 180, 180, 150); // topleft x, topleft y, width, height
+
+        // bool visRect = true;
+        // if (visRect){
+        //     cv::Mat visImage = imgGray.clone();
+        // cv::drawKeypoints(visImage, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        //     cv::rectangle(visImage, vehicleRect, cv::Scalar(255, 255, 255));
+        //     cv::imshow("rectangle", visImage);
+        //     cv::waitKey(0);
+        // }
+
         if (bFocusOnVehicle)
         {
-            // ...
+            // to help debugging
+            int eraseCnt = 0;
+            int keepCnt = 0;
+
+            for (auto it = keypoints.begin(); it < keypoints.end();)
+            {
+                int thispointx = it->pt.x;
+                int thispointy = it->pt.y;
+
+                if ((thispointx < vehicleRect.x) || (thispointx > (vehicleRect.x + vehicleRect.width)) || (thispointy < vehicleRect.y) || (thispointy > (vehicleRect.y + vehicleRect.height)))
+                {
+                    //  cout << " outside the ROI" << endl;
+                    // erase returns pointer to next element
+                    it = keypoints.erase(it);
+                    eraseCnt++;
+                }
+                else
+                {
+                    cout << " coords: " << thispointx << ", " << thispointy << "\t- ";
+                    cout << " inside the ROI" << endl;
+                    keepCnt++;
+                    it++;
+                }
+
+            }
+
+            cout << "erased: " << eraseCnt << "\tkept" << keepCnt << "\tKp: " << keypoints.size() <<endl ;
+        }
+
+        bool visRect = false;
+        if (visRect)
+        {
+            cout << "\finished tKp: " << keypoints.size() <<endl ;
+            cv::Mat visImage = imgGray.clone();
+            cv::drawKeypoints(visImage, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+            cv::rectangle(visImage, vehicleRect, cv::Scalar(255, 255, 255));
+            cv::imshow("rectangle", visImage);
+            cv::waitKey(0);
         }
 
         //// EOF STUDENT ASSIGNMENT

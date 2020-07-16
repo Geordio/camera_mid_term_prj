@@ -50,7 +50,8 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     }
     else
     {
-
+        // TODO update to implement the other descriptors required
+        
         //...
     }
 
@@ -90,7 +91,7 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
     cout << "Shi-Tomasi detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
 
-    // visualize results
+    // visualize results - could probably merge to single method to visualise all types
     if (bVis)
     {
         cv::Mat visImage = img.clone();
@@ -185,3 +186,120 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
     }
     // EOF STUDENT CODE
 }
+
+void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std::string detectorType, bool bVis)
+// void descKeypoints1()
+{
+    // load image from file and convert to grayscale
+    cv::Mat imgGray;
+    img = cv::imread("../images/img1.png");
+    cv::cvtColor(img, imgGray, cv::COLOR_BGR2GRAY);
+
+    // BRISK detector / descriptor
+    //FAST, BRISK, ORB, AKAZE, SIFT
+
+    cv::Ptr<cv::FeatureDetector> detector;
+
+        if (detectorType.compare("FAST") == 0)
+        {
+            // detector = cv::FastFeatureDetector::create();
+    int threshold = 30;                                                              // difference between intensity of the central pixel and pixels of a circle around this pixel
+    bool bNMS = true;                                                                // perform non-maxima suppression on keypoints
+    cv::FastFeatureDetector::DetectorType type = cv::FastFeatureDetector::TYPE_9_16; // TYPE_9_16, TYPE_7_12, TYPE_5_8
+    detector = cv::FastFeatureDetector::create(threshold, bNMS, type);
+
+
+        }
+        else if (detectorType.compare("BRISK") == 0)
+        {
+            detector = cv::BRISK::create();
+        }
+        else if (detectorType.compare("ORB") == 0)
+        {
+            detector = cv::ORB::create();
+        }
+                else if (detectorType.compare("AKAZE") == 0)
+        {
+            detector = cv::AKAZE::create();
+        }
+                else if (detectorType.compare("SIFT") == 0)
+        {
+            detector = cv::xfeatures2d::SIFT::create();
+        }
+        else
+        {
+            cout << "unrecognised detector string" << endl;
+        }
+        
+
+
+    // cv::Ptr<cv::FeatureDetector> detector = cv::BRISK::create();
+    // vector<cv::KeyPoint> kptsBRISK;
+
+    double t = (double)cv::getTickCount();
+
+    // run detector and populate the keypoints variable that was passed as ref
+    detector->detect(imgGray, keypoints);
+
+    
+    // t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    // cout << detectorType << "detector with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+
+    // cv::Ptr<cv::DescriptorExtractor> descriptor = cv::BRISK::create();
+    // cv::Mat descBRISK;
+
+    // t = (double)cv::getTickCount();
+    // descriptor->compute(imgGray, kptsBRISK, descBRISK);
+    // t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    // cout << "BRISK descriptor in " << 1000 * t / 1.0 << " ms" << endl;
+
+    // // visualize results
+    // cv::Mat visImage = img.clone();
+    // cv::drawKeypoints(img, kptsBRISK, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    // string windowName = "BRISK Results";
+    // cv::namedWindow(windowName, 1);
+    // imshow(windowName, visImage);
+    // cv::waitKey(0);
+
+    // // TODO: Add the SIFT detector / descriptor, compute the 
+    // // time for both steps and compare both BRISK and SIFT
+    // // with regard to processing speed and the number and 
+    // // visual appearance of keypoints.
+    // // BRISK detector / descriptor
+    // cv::Ptr<cv::FeatureDetector> detectorSIFT = cv::xfeatures2d::SIFT::create();
+    // vector<cv::KeyPoint> kptsSIFT;
+  
+    // t = (double)cv::getTickCount();
+    // detectorSIFT->detect(imgGray, kptsSIFT);
+    // t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    // cout << "SIFT detector with n= " << kptsSIFT.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+  
+  
+    // cv::Ptr<cv::DescriptorExtractor> descriptorSIFT = cv::xfeatures2d::SIFT::create();
+    // cv::Mat descSIFT;
+    // t = (double)cv::getTickCount();
+    // descriptor->compute(imgGray, kptsSIFT, descSIFT);
+    // t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
+    // cout << "SIFT descriptor in " << 1000 * t / 1.0 << " ms" << endl;
+  
+    // // visualize results
+    // visImage = img.clone();
+    // cv::drawKeypoints(img, kptsSIFT, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+    // windowName = "SIFT Results";
+    // cv::namedWindow(windowName, 1);
+    // imshow(windowName, visImage);
+    // cv::waitKey(0);
+
+        // visualize results
+    if (bVis)
+    {
+        cv::Mat visImage = img.clone();
+        cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+        string windowName = detectorType +" Detector Results";
+        cv::namedWindow(windowName, 6);
+        imshow(windowName, visImage);
+        cv::waitKey(0);
+    }
+
+}
+
