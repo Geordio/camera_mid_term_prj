@@ -48,12 +48,38 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
 
         extractor = cv::BRISK::create(threshold, octaves, patternScale);
     }
-    else
-    {
-        // TODO update to implement the other descriptors required
+    //add ...BRIEF, ORB, FREAK, AKAZE and SIFT.
+
+    else if (descriptorType.compare("BRIEF") == 0)
+    { 
+        extractor = cv::xfeatures2d::BriefDescriptorExtractor::create();
         
-        //...
     }
+    else if (descriptorType.compare("ORB") == 0)
+    { 
+        // TODO update to implement the other descriptors required
+            extractor = cv::ORB::create();
+        
+    }
+        else if (descriptorType.compare("FREAK") == 0)
+    { 
+        // TODO update to implement the other descriptors required
+                    extractor = cv::xfeatures2d::FREAK::create();
+    }
+        else if (descriptorType.compare("AKAZE") == 0)
+    { 
+        // TODO update to implement the other descriptors required
+                    extractor = cv::AKAZE::create();
+    }
+    else if (descriptorType.compare("SIFT") == 0)
+    { 
+        // TODO update to implement the other descriptors required
+            extractor = cv::xfeatures2d::SIFT::create();
+    }
+    else {
+        cout << "unrecognised descriptor string" << endl;
+    }
+    // TODO: NEED TO DOUBLE CHECK. seems too simple. is that it? 
 
     // perform feature description
     double t = (double)cv::getTickCount();
