@@ -16,6 +16,15 @@
 #include "dataStructures.h"
 #include "matching2D.hpp"
 
+// to work with directories
+#include <dirent.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <limits.h>
+// #include <boost/filesystem.hpp>
+#include <sys/types.h>
+#include <sys/stat.h>
+
 using namespace std;
 
 /* MAIN PROGRAM */
@@ -25,6 +34,7 @@ int main(int argc, const char **argv)
     bool bStepsOp = false;
     bool bWaitKey = false;
     bool bProcessAll = true;
+    bool bSaveImg = true;
     string detectorType = "HARRIS";               // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
     string descriptorType = "SIFT";               // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
     string matcherType = "MAT_FLANN";             // MAT_BF, MAT_FLANN
@@ -43,8 +53,8 @@ int main(int argc, const char **argv)
         detectors = {detectorType};
         descriptors = {descriptorType};
     }
-
-    cout << "det: " << endl;
+// output the detector and descriptors that will be executed
+    // 
     int idx = 1;
     for (string det : detectors)
     {
@@ -61,30 +71,30 @@ int main(int argc, const char **argv)
     }
     cout << endl;
 
-    cout << detectorType << ", " << descriptorType << ": ";
+    // cout << detectorType << ", " << descriptorType << ": ";
 
     // parse arguements to set the keypoint algorithms
 
-    cout << "arguments: " << argc << endl;
-    int numOfArg = 3; // additional arguement is passed by default for pwd
+    // cout << "arguments: " << argc << endl;
+    // int numOfArg = 3; // additional arguement is passed by default for pwd
 
-    if (argc < 2)
-    {
-        cout << "No arguments passed, using default algorithms" << endl;
-    }
-    else if (argc < numOfArg)
-    {
-        cout << "less than " << numOfArg << " arguments passed, using default algorithms" << endl;
-    }
-    else if (argc == numOfArg)
-    {
-        cout << "valid number of arguements in order to set algorithms" << endl;
-    }
+    // if (argc < 2)
+    // {
+    //     cout << "No arguments passed, using default algorithms" << endl;
+    // }
+    // else if (argc < numOfArg)
+    // {
+    //     cout << "less than " << numOfArg << " arguments passed, using default algorithms" << endl;
+    // }
+    // else if (argc == numOfArg)
+    // {
+    //     cout << "valid number of arguements in order to set algorithms" << endl;
+    // }
 
-    for (int i = 0; i < argc; i++)
-    {
-        cout << "arg #" << i << "\targv: " << argv[i] << endl;
-    }
+    // for (int i = 0; i < argc; i++)
+    // {
+    //     cout << "arg #" << i << "\targv: " << argv[i] << endl;
+    // }
 
     // std::vector <std::string> arguments;
     // // std::string destination;
@@ -117,9 +127,8 @@ int main(int argc, const char **argv)
             if (desc == "SIFT")
             {
                 descriptorTypeMatching = "DES_HOG";
-            
             }
-                descriptorTypeMatching = "DES_BIN";
+            descriptorTypeMatching = "DES_BIN";
 
             descriptorType = desc;
             cout << idx << "\t";
@@ -128,32 +137,33 @@ int main(int argc, const char **argv)
             cout << endl;
             idx++;
 
+            // data location
+            string dataPath = "../";
 
-    // data location
-    string dataPath = "../";
+            // camera
+            string imgBasePath = dataPath + "images/";
+            string imgPrefix = "KITTI/2011_09_26/image_00/data/000000"; // left camera, color
+            string imgFileType = ".png";
+            int imgStartIndex = 0; // first file index to load (assumes Lidar and camera names have identical naming convention)
+            int imgEndIndex = 9;   // last file index to load
+            int imgFillWidth = 4;  // no. of digits which make up the file index (e.g. img-0001.png)
 
-    // camera
-    string imgBasePath = dataPath + "images/";
-    string imgPrefix = "KITTI/2011_09_26/image_00/data/000000"; // left camera, color
-    string imgFileType = ".png";
-    int imgStartIndex = 0; // first file index to load (assumes Lidar and camera names have identical naming convention)
-    int imgEndIndex = 9;   // last file index to load
-    int imgFillWidth = 4;  // no. of digits which make up the file index (e.g. img-0001.png)
+            // misc
+            int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
+            vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
+            bool bVis = false;            // visualize results
 
-    // misc
-    int dataBufferSize = 2;       // no. of images which are held in memory (ring buffer) at the same time
-    vector<DataFrame> dataBuffer; // list of data frames which are held in memory at the same time
-    bool bVis = false;            // visualize results
 
-    // iterate over detectors and descriptors
 
+            // iterate over detectors and descriptors
 
             /* MAIN LOOP OVER ALL IMAGES */
 
             for (size_t imgIndex = 0; imgIndex <= imgEndIndex - imgStartIndex; imgIndex++)
             {
                 /* LOAD IMAGE INTO BUFFER */
-                cout << "----------- IMAGE " << imgIndex << " -----------" << endl;
+                // cout << "----------- IMAGE " << imgIndex << " -----------" << endl;
+                cout << "IMAGE " << imgIndex << "\t";// << endl;
                 // assemble filenames for current index
                 ostringstream imgNumber;
                 imgNumber << setfill('0') << setw(imgFillWidth) << imgStartIndex + imgIndex;
@@ -251,7 +261,7 @@ int main(int argc, const char **argv)
                             it++;
                         }
                     }
-                    cout << "vehicleKeypoints: " << keypoints.size() << endl;
+                    cout << "vehicleKeypoints: " << keypoints.size() << ", ";// << endl;
                     // cout << "erased: " << eraseCnt << "\tkept" << keepCnt << "\tKp: " << keypoints.size() <<endl ;
                 }
 
@@ -265,6 +275,54 @@ int main(int argc, const char **argv)
                     cv::imshow("rectangle", visImage);
                     cv::waitKey(0);
                 }
+
+
+                // save the images for viewing
+                if (bSaveImg)
+                {
+
+                    string dirname = "../output/"+ detectorType + "_" + descriptorType;
+                    string filename = "";
+
+                    if (imgIndex == 0)
+                    {
+                        char cwd[PATH_MAX];
+                        if (getcwd(cwd, sizeof(cwd)) != NULL)
+                        {
+                            // cout << "Current working dir: " << cwd << endl;
+                        }
+                        else
+                        {
+                            // cout << "getcwd() error";
+                        }
+                        // cout << "checking dir" << endl;
+                        const char *pzPath = (char *)dirname.c_str();
+                        // cout << "dir name: " << pzPath << endl;
+                        // if (pzPath == NULL)
+                        //     cout << "no directory set";
+
+                        DIR *pDir;
+                        bool bExists = false;
+                        pDir = opendir(pzPath);
+                        // cout << "dir found :" << pDir << endl;
+                        if (pDir != 0)
+                        {
+                            bExists = true;
+                            (void)closedir(pDir);
+                        }
+                        else
+                        {
+                            int status;
+                            // cout << "going to make a dir" << endl;
+                            status = mkdir(pzPath, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH);
+                        }
+                    }
+                    cv::Mat visImage = imgGray.clone();
+                    cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
+                    imwrite(dirname + "/detected_kpts_img_" + std::to_string(imgIndex) + ".jpg", visImage);
+                    // return bExists;
+                }
+
 
                 //// EOF STUDENT ASSIGNMENT
 
@@ -349,11 +407,12 @@ int main(int argc, const char **argv)
                         }
                     }
                     bVis = false;
+                    // cout << endl;
                 }
 
                 // TODO: could do some summarising her. the number of keypoints and matches were all returned.
                 // only the time isnt.
-
+            cout << endl;
             } // eof loop over all images
         }
     }

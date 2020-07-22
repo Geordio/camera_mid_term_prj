@@ -4,7 +4,7 @@
 using namespace std;
 
     int cnt = 0;
-
+    bool bSingleLineOp = true;
 
 // Find best matches for keypoints in two camera images based on several matching methods
 void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::KeyPoint> &kPtsRef, cv::Mat &descSource, cv::Mat &descRef,
@@ -39,7 +39,7 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
     { // nearest neighbor (best match)
 
         matcher->match(descSource, descRef, matches); // Finds the best match for each descriptor in desc1
-        cout << "SEL_NN\t: total keypoint matches: " << matches.size() << endl;
+        cout << "SEL_NN: total keypoint matches: " << matches.size() << endl;
     }
     else if (selectorType.compare("SEL_KNN") == 0)
     {   // k nearest neighbors (k=2)
@@ -61,7 +61,14 @@ void matchDescriptors(std::vector<cv::KeyPoint> &kPtsSource, std::vector<cv::Key
                 matches.push_back((*it)[0]);
             }
         }
-        cout << "SEL_KNN\t: final keypoint matches: " << matches.size() << endl;
+        cout << "SEL_KNN: final keypoint matches: " << matches.size();
+        if (!bSingleLineOp) 
+            cout << endl;
+        else
+        {
+            cout << ", ";
+        }
+        
         // cout << "SEL_KNN\t: total keypts matches: " << knn_matches.size() << "\t remaining: "  << matches.size() << endl;
     }
 }
@@ -120,7 +127,13 @@ void descKeypoints(vector<cv::KeyPoint> &keypoints, cv::Mat &img, cv::Mat &descr
     extractor->compute(img, keypoints, descriptors);
 
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << descriptorType << " descriptor extraction in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << descriptorType << " descriptor extraction time: " << 1000 * t / 1.0 << ", ms"; //<< endl;
+            if (!bSingleLineOp) 
+            cout << endl;
+                    else
+        {
+            cout << ", ";
+        }
 }
 
 // Detect keypoints in image using the traditional Shi-Thomasi detector
@@ -151,7 +164,13 @@ void detKeypointsShiTomasi(vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool b
         keypoints.push_back(newKeyPoint);
     }
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << "Shi-Tomasi detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << "Shi-Tomasi detection. kpts: " << keypoints.size() << ", time:  " << 1000 * t / 1.0 << ", ms" ;//<< endl;
+            if (!bSingleLineOp) 
+            cout << endl;
+                    else
+        {
+            cout << ", ";
+        }
 
     // visualize results - could probably merge to single method to visualise all types
     if (bVis)
@@ -240,7 +259,13 @@ void detKeypointsHarris(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, bool
         } // eof loop over cols
     }     // eof loop over rows
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << "Harris detection with n=" << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << "Harris detection. kpts: " << keypoints.size() << ", time:  " << 1000 * t / 1.0 << ", ms";// << endl;
+            if (!bSingleLineOp) 
+            cout << endl;
+                    else
+        {
+            cout << ", ";
+        }
     // visualize keypoints
     if (bVis)
     {
@@ -305,7 +330,13 @@ void detKeypointsModern(std::vector<cv::KeyPoint> &keypoints, cv::Mat &img, std:
     detector->detect(img, keypoints);
 
     t = ((double)cv::getTickCount() - t) / cv::getTickFrequency();
-    cout << detectorType << "detector with n= " << keypoints.size() << " keypoints in " << 1000 * t / 1.0 << " ms" << endl;
+    cout << detectorType << "detector. kpts: " << keypoints.size() << ", time: " << 1000 * t / 1.0 << ", ms"; // << endl;
+            if (!bSingleLineOp) 
+            cout << endl;
+        else
+        {
+            cout << ", ";
+        }
 
     // cv::Ptr<cv::DescriptorExtractor> descriptor = cv::BRISK::create();
     // cv::Mat descBRISK;
