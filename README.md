@@ -122,7 +122,7 @@ The application was updated to allow automatic processing of valid combinations,
 The saved images can be viewed in the
 [output folder](output/)
 
-For each image, the full size version and a smaller croped version is included. Note that the cropped version is larger that the specified ROI, to ensure that the keypoints, including their neighbourhood area can be rendered and viewed.
+For each input image a smaller cropped detector is included. Note that the cropped version is larger that the specified ROI, to ensure that the keypoints, including their neighbourhood area can be rendered and viewed.
 
 
 
@@ -195,16 +195,119 @@ For each image, the full size version and a smaller croped version is included. 
 
 
 
+### MP.8 Performance Evaluation 2
+
+<em> Count the number of matched keypoints for all 10 images using all possible combinations of detectors and descriptors. In the matching step, the BF approach is used with the descriptor distance ratio set to 0.8. </em>
+
+| combination     | Keypoint Matches | Total Keypoint <br> match attempted| keypoint match ratio |
+|-----------------|------------------|----------------------------------------------------------|----------------------|
+| SHITOMASI SIFT  | 937              | 1076                                                     | 0.871                |
+| AKAZE SIFT      | 1277             | 1490                                                     | 0.857                |
+| AKAZE AKAZE     | 1173             | 1490                                                     | 0.787                |
+| FAST SIFT       | 1055             | 1357                                                     | 0.777                |
+| SHITOMASI BRIEF | 822              | 1076                                                     | 0.764                |
+| HARRIS SIFT     | 163              | 214                                                      | 0.762                |
+| AKAZE BRISK     | 1113             | 1490                                                     | 0.747                |
+| ORB SIFT        | 758              | 1025                                                     | 0.740                |
+| AKAZE BRIEF     | 1081             | 1490                                                     | 0.726                |
+| SHITOMASI ORB   | 775              | 1076                                                     | 0.720                |
+| HARRIS ORB      | 145              | 214                                                      | 0.678                |
+| BRISK SIFT      | 1638             | 2470                                                     | 0.663                |
+| HARRIS BRIEF    | 141              | 214                                                      | 0.659                |
+| FAST BRIEF      | 893              | 1357                                                     | 0.658                |
+| AKAZE FREAK     | 976              | 1490                                                     | 0.655                |
+| FAST ORB        | 886              | 1357                                                     | 0.653                |
+| SIFT SIFT       | 807              | 1245                                                     | 0.648                |
+| SHITOMASI BRISK | 697              | 1076                                                     | 0.648                |
+| ORB BRISK       | 648              | 1025                                                     | 0.632                |
+| AKAZE ORB       | 926              | 1490                                                     | 0.621                |
+| FAST BRISK      | 790              | 1357                                                     | 0.582                |
+| HARRIS FREAK    | 123              | 214                                                      | 0.575                |
+| HARRIS BRISK    | 121              | 214                                                      | 0.565                |
+| BRISK BRIEF     | 1355             | 2470                                                     | 0.549                |
+| SHITOMASI FREAK | 582              | 1076                                                     | 0.541                |
+| BRISK BRISK     | 1300             | 2470                                                     | 0.526                |
+| ORB ORB         | 532              | 1025                                                     | 0.519                |
+| FAST FREAK      | 680              | 1357                                                     | 0.501                |
+| SIFT BRIEF      | 603              | 1245                                                     | 0.484                |
+| BRISK FREAK     | 1099             | 2470                                                     | 0.445                |
+| SIFT BRISK      | 543              | 1245                                                     | 0.436                |
+| ORB BRIEF       | 446              | 1025                                                     | 0.435                |
+| SIFT FREAK      | 512              | 1245                                                     | 0.411                |
+| BRISK ORB       | 942              | 2470                                                     | 0.381                |
+| ORB FREAK       | 346              | 1025                                                     | 0.338                |
+
+### MP.9 Performance Evaluation 3
+
+<em> Log the time it takes for keypoint detection and descriptor extraction. The results must be entered into a spreadsheet and based on this data, the TOP3 detector / descriptor combinations must be recommended as the best choice for our purpose of detecting keypoints on vehicles. </em>
+
+A spreasheet including all data is at the link [report](report.ods)
 
 
+| combination     | Total time (det+desc) |
+|-----------------|-----------------------|
+| FAST BRIEF      | 15.283221             |
+| FAST ORB        | 17.569503             |
+| FAST BRISK      | 26.662015             |
+| ORB BRIEF       | 75.413866             |
+| ORB ORB         | 99.79161              |
+| HARRIS ORB      | 134.384381            |
+| HARRIS BRIEF    | 135.70158             |
+| HARRIS BRISK    | 141.093285            |
+| ORB BRISK       | 144.04453             |
+| SHITOMASI BRIEF | 144.519401            |
+| SHITOMASI ORB   | 145.497365            |
+| FAST SIFT       | 148.725341            |
+| SHITOMASI BRISK | 162.96137             |
+| SHITOMASI SIFT  | 230.4309              |
+| HARRIS SIFT     | 251.0689              |
+| BRISK BRIEF     | 415.70919             |
+| FAST FREAK      | 420.729469            |
+| BRISK BRISK     | 435.175               |
+| BRISK ORB       | 441.56829             |
+| ORB SIFT        | 448.55095             |
+| ORB FREAK       | 504.79503             |
+| SHITOMASI FREAK | 522.4053              |
+| HARRIS FREAK    | 574.2756              |
+| AKAZE ORB       | 580.38048             |
+| AKAZE BRISK     | 618.2555              |
+| AKAZE SIFT      | 704.5548              |
+| BRISK SIFT      | 712.2969              |
+| AKAZE BRIEF     | 747.686952            |
+| BRISK FREAK     | 841.6666              |
+| SIFT BRISK      | 975.52711             |
+| AKAZE FREAK     | 984.4946              |
+| AKAZE AKAZE     | 1027.9737             |
+| SIFT BRIEF      | 1040.692737           |
+| SIFT FREAK      | 1470.2517             |
+| SIFT SIFT       | 1843.5979             |
 
 
-
-
-
-
-#### Findings
+#### Findings  & Recommendation
 
 For automotive implementations, a good detector must be fast, but also be able to detect a large number of keypoints. Typically detectors are good at one or the other, which means that compromises must be made. In order to provide a truely objective proposal they should be evaluated against metrics for speed and performance.
 
-Brisk returned the largest number of keypoints. Following Brisk, the order of most keypoints to fewest was, AKAZE, FAST, SIFT, SHITOMASI, ORB, with all providing a reasonable number of keypoints.  Harris detected very few keypoints, several magnitudes less than the others making it a selection match for the task.
+##### Volume of Keypoints
+Brisk returned the largest number of keypoints.
+Following Brisk, the order of most keypoints to fewest was, AKAZE, FAST, SIFT, SHITOMASI, ORB, with all providing a reasonable number of keypoints.  
+Harris detected very few keypoints, several magnitudes less than the others making it a poor option for the task.
+
+##### Matching Performamce
+
+Combinations that used SIFT, BRIEF and AKAZE had the highest percentage of keypoint matching. The highest percentage was 87% with the average 62%. Lowest performace percentages were down at 33% for Orb detector with FREAK descriptor.
+
+##### Speed
+In line with their name, the FAST detector provided the quickest results, when paired with BRIEF, ORB and BRISK descriptors.
+
+##### Recommendation
+
+As mentioned, the recommendation is a balance of priorities.
+
+My recommendation would be:  
+1 - FAST BRIEF  
+2 - FAST ORB  
+3 - FAST BRISK
+
+The FAST BRISK combination has a slighly lower than average keypoint matching ratio, but it is still 3 times as fast as the 4th fastest performing combination (Orb Brief, which has a lower match ratio)
+
+This is based on the speed gains being several orders of magnitudes better that the matching performance of the other combinations.
