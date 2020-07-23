@@ -142,7 +142,7 @@ For each input image a smaller cropped detector is included. Note that the cropp
     <td class="tg-0pky">BRISK</td>
     <td class="tg-0pky">2722</td>
     <td class="tg-0pky">1</td>
-    <td class="tg-0pky"><img src="/output/BRISK/brisk.gif" alt="brisk"/> </td>
+    <td tyle="width:400px"><img src="/output/BRISK/brisk.gif" alt="brisk"/> </td>
     <td class="tg-0pky">Detects the largest number of keypoints. Thepoint have the largest meaningful neighbourhood. The majority of the keypoints are clustered around the outside of the lead vehicle, but also with some keypoints around the number plate and light clusters,  .Keypoints were also detected on the vehicles in the distance, both in the same lane as the ego vehicle and adjacent lanes</td>
   </tr>
   <tr>
