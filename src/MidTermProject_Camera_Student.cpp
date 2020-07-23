@@ -33,8 +33,8 @@ int main(int argc, const char **argv)
 
     bool bStepsOp = false;
     bool bWaitKey = false;
-    bool bProcessAll = true;
-    bool bSaveImg = true;
+    bool bProcessAll = false;
+    bool bSaveImg = false;
     string detectorType = "HARRIS";               // SHITOMASI, HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
     string descriptorType = "SIFT";               // BRISK, BRIEF, ORB, FREAK, AKAZE, SIFT
     string matcherType = "MAT_FLANN";             // MAT_BF, MAT_FLANN
@@ -71,8 +71,8 @@ int main(int argc, const char **argv)
     }
     cout << endl;
 
+    /// WAS USED TO CHECK COMMAND LINE ARGUMENTS BUT NOT USED NOW
     // cout << detectorType << ", " << descriptorType << ": ";
-
     // parse arguements to set the keypoint algorithms
 
     // cout << "arguments: " << argc << endl;
@@ -90,7 +90,6 @@ int main(int argc, const char **argv)
     // {
     //     cout << "valid number of arguements in order to set algorithms" << endl;
     // }
-
     // for (int i = 0; i < argc; i++)
     // {
     //     cout << "arg #" << i << "\targv: " << argv[i] << endl;
@@ -108,13 +107,17 @@ int main(int argc, const char **argv)
     /* INIT VARIABLES AND DATA STRUCTURES */
     cout << "det: " << endl;
     idx = 1;
+
+
     for (string det : detectors)
     {
+
+        int detectorPassIdx = 0; // how many times this detector has been run.
         // cout << det << " ";
         detectorType = det;
         for (string desc : descriptors)
         {
-            // only do AKAZE with AKAZE
+            // only do AKAZE descriptor with AKAZE detector
             if ((desc == "AKAZE") && (det != "AKAZE"))
             {
                 continue;
@@ -180,13 +183,10 @@ int main(int argc, const char **argv)
                 // push image into data frame buffer
                 DataFrame frame;
                 frame.cameraImg = imgGray;
-                dataBuffer.push_back(frame);
-                // cout << "databuffer size: " << dataBuffer.size();
-                if (dataBuffer.size() > dataBufferSize)
-                {
-                    dataBuffer.erase(dataBuffer.begin());
-                }
-                // cout << "updated size: " << dataBuffer.size() << endl;
+                    dataBuffer.push_back(frame);
+                    if (dataBuffer.size() > dataBufferSize)
+                        dataBuffer.erase(dataBuffer.begin());
+
 
                 //// EOF STUDENT ASSIGNMENT
                 if (bStepsOp)
@@ -203,6 +203,8 @@ int main(int argc, const char **argv)
                 //// TASK MP.2 -> add the following keypoint detectors in file matching2D.cpp and enable string-based selection based on detectorType
                 //// -> HARRIS, FAST, BRISK, ORB, AKAZE, SIFT
 
+
+                // RUN THE DETECTORS
                 if (detectorType.compare("SHITOMASI") == 0)
                 {
                     detKeypointsShiTomasi(keypoints, imgGray, false);
@@ -216,6 +218,8 @@ int main(int argc, const char **argv)
                     // cout << "anything else" << endl;
                     detKeypointsModern(keypoints, imgGray, detectorType, false);
                 }
+
+
                 //// EOF STUDENT ASSIGNMENT
 
                 //// STUDENT ASSIGNMENT
@@ -226,43 +230,28 @@ int main(int argc, const char **argv)
                 bool bFocusOnVehicle = true;
                 cv::Rect vehicleRect(535, 180, 180, 150); // topleft x, topleft y, width, height
 
-                // bool visRect = true;
-                // if (visRect){
-                //     cv::Mat visImage = imgGray.clone();
-                // cv::drawKeypoints(visImage, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-                //     cv::rectangle(visImage, vehicleRect, cv::Scalar(255, 255, 255));
-                //     cv::imshow("rectangle", visImage);
-                //     cv::waitKey(0);
-                // }
-
                 if (bFocusOnVehicle)
                 {
                     // to help debugging
                     int eraseCnt = 0;
                     int keepCnt = 0;
-
                     for (auto it = keypoints.begin(); it < keypoints.end();)
                     {
                         int thispointx = it->pt.x;
                         int thispointy = it->pt.y;
-
                         if ((thispointx < vehicleRect.x) || (thispointx > (vehicleRect.x + vehicleRect.width)) || (thispointy < vehicleRect.y) || (thispointy > (vehicleRect.y + vehicleRect.height)))
                         {
-                            //  cout << " outside the ROI" << endl;
                             // erase returns pointer to next element
                             it = keypoints.erase(it);
                             eraseCnt++;
                         }
                         else
                         {
-                            // cout << " coords: " << thispointx << ", " << thispointy << "\t- ";
-                            // cout << " inside the ROI" << endl;
                             keepCnt++;
                             it++;
                         }
                     }
                     cout << "vehicleKeypoints: " << keypoints.size() << ", ";// << endl;
-                    // cout << "erased: " << eraseCnt << "\tkept" << keepCnt << "\tKp: " << keypoints.size() <<endl ;
                 }
 
                 bool visRect = false;
@@ -277,30 +266,18 @@ int main(int argc, const char **argv)
                 }
 
 
-                // save the images for viewing
-                if (bSaveImg)
+                // save the images for viewing (detected keypoints)
+                if (bSaveImg && (detectorPassIdx == 0) )
                 {
-
-                    string dirname = "../output/"+ detectorType + "_" + descriptorType;
+                    string dirname = "../output/"+ detectorType;
                     string filename = "";
 
                     if (imgIndex == 0)
                     {
-                        char cwd[PATH_MAX];
-                        if (getcwd(cwd, sizeof(cwd)) != NULL)
-                        {
-                            // cout << "Current working dir: " << cwd << endl;
-                        }
-                        else
-                        {
-                            // cout << "getcwd() error";
-                        }
-                        // cout << "checking dir" << endl;
                         const char *pzPath = (char *)dirname.c_str();
                         // cout << "dir name: " << pzPath << endl;
                         // if (pzPath == NULL)
                         //     cout << "no directory set";
-
                         DIR *pDir;
                         bool bExists = false;
                         pDir = opendir(pzPath);
@@ -319,8 +296,11 @@ int main(int argc, const char **argv)
                     }
                     cv::Mat visImage = imgGray.clone();
                     cv::drawKeypoints(img, keypoints, visImage, cv::Scalar::all(-1), cv::DrawMatchesFlags::DRAW_RICH_KEYPOINTS);
-                    imwrite(dirname + "/detected_kpts_img_" + std::to_string(imgIndex) + ".jpg", visImage);
-                    // return bExists;
+                    imwrite(dirname + "/" + detectorType + "_detected_kpts_img_" + std::to_string(imgIndex) + ".jpg", visImage);
+                    cv::Rect croppingRect(500, 145, 250, 220); // topleft x, topleft y, width, height
+                    // crop image for reporting...
+                    cv::Mat croppedImage = visImage(croppingRect);
+                    imwrite(dirname + "/" + detectorType + "_detected_kpts_img_crop_" + std::to_string(imgIndex) + ".jpg", croppedImage);
                 }
 
 
@@ -367,9 +347,7 @@ int main(int argc, const char **argv)
                     /* MATCH KEYPOINT DESCRIPTORS */
 
                     vector<cv::DMatch> matches;
-                    // string matcherType = "MAT_BF";        // MAT_BF, MAT_FLANN
-                    // string descriptorTypeMatching = "DES_BINARY"; // DES_BINARY, DES_HOG
-                    // string selectorType = "SEL_NN";       // SEL_NN, SEL_KNN
+
 
                     //// STUDENT ASSIGNMENT
                     //// TASK MP.5 -> add FLANN matching in file matching2D.cpp
@@ -414,6 +392,8 @@ int main(int argc, const char **argv)
                 // only the time isnt.
             cout << endl;
             } // eof loop over all images
+            detectorPassIdx ++; // increment the number of times that the detector has run, to allow us to only save files on single pass
+            // cout << "dpidx: " << detectorPassIdx << endl;
         }
     }
     // eof loop over all descriptors and detectors
