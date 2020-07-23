@@ -133,7 +133,7 @@ For each input image a smaller cropped detector is included. Note that the cropp
     <th class="tg-0pky">Detector</th>
     <th class="tg-0pky">Keypoints in ROI (lead vehicle)</th>
     <th class="tg-0pky">Keypoint volume rank</th>
-    <th style="width:300px">Sample image</th>
+    <th style="width:400px">Images</th>
     <th class="tg-0pky">Comments</th>
   </tr>
 </thead>
