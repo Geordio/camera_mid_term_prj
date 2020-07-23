@@ -124,15 +124,90 @@ The saved images can be viewed in the
 
 For each image, the full size version and a smaller croped version is included. Note that the cropped version is larger that the specified ROI, to ensure that the keypoints, including their neighbourhood area can be rendered and viewed.
 
-| Detector  | Keypoints in ROI (lead vehicle) | Keypoint volume rank | &nbsp; &nbsp; &nbsp; Sample image &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;| Comments                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
-|-----------|---------------------------------|----------------------|--------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| BRISK     | 2722                            | 1                    | ![BRISK](/output/BRISK/brisk.gif)              | Detects the largest number of keypoints. Thepoint have the largest meaningful neighbourhood. The majority of the keypoints are clustered around the outside of the lead vehicle, but also with some keypoints around the number plate and light clusters,  .Keypoints were also detected on the vehicles in the distance, both in the same lane as the ego vehicle and adjacent lanes                                                                                                                                                     |
-| AKAZE     | 1666                            | 2                    |   <img src=/output/AKAZE/akaze.gif alt="drawing" width="400"/>           | Akaze detectsfewer keypoints than BRISK, with much smaller neigbourhhoods. There is a significant concentration around the outside of the lead vehicle, with a fairly uniform distribution in these areas. There are no keypoints detected in areas such as the number plate.Again the vehicles in adjacent vehicles have keypoints detected.                                                                                                                                                                                             |
-| FAST      | 1501                            | 3                    |              | FAST generates fewer keypoints, but is the fastest. There is again a decent concentration of keypoints around the outer of the lead vehicle. It can be clearly seen from the image that keypoints are detected on other vehicles and lane markings.                                                                                                                                                                                                                                                                                       |
-| SIFT      | 1381                            | 4                    |              | SIFT detects keypoints on the rear screen of the proceeding vehicle. The size of the neighbourhoods vary from very small to medium size.                                                                                                                                                                                                                                                                                                                                                                                                  |
-| SHITOMASI | 1189                            | 5                    |              | Shi-tomasi generates a cluster of keypoints around the number plate of the lead car, around the headrests visible through the rear screen and the edge of the vehicle.                                                                                                                                                                                                                                                                                                                                                                    |
-| ORB       | 1150                            | 6                    |              | Keypoints are concentrated into a number of highly dense areas. The main concentrations appear to be around the lights. The keypoints are so concenrtated that the keypoint plots almost appear as concentric circles. The neighbourhood areas are the largest of the detectors. Orb returns a deifned number of keypoints each time which my default is set to 500. This was not modifed during this exerces. Orb was the 2nd fastest detector. ORB was one of the few detectors not to detect keypoints on the leading vehicles shadow. |
-| HARRIS    | 248                             | 7                    |              | Harris generates the fewest number of keypoints. Because it detects fewer keypoints there are less keypoints on the other vehicles as well. On the lead vehicle, there are keypoint clusters around the brake lights (both side and centre high mounted), but relatively few on the edge of the vehicle                                                                                                                                                                                                                                   |
+
+
+
+<style type="text/css">
+.tg  {border-collapse:collapse;border-spacing:0;}
+.tg td{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg th{border-color:black;border-style:solid;border-width:1px;font-family:Arial, sans-serif;font-size:14px;
+  font-weight:normal;overflow:hidden;padding:10px 5px;word-break:normal;}
+.tg .tg-0pky{border-color:inherit;text-align:left;vertical-align:top}
+</style>
+<table class="tg">
+<thead>
+  <tr>
+    <th class="tg-0pky">Detector</th>
+    <th class="tg-0pky">Keypoints in ROI (lead vehicle)</th>
+    <th class="tg-0pky">Keypoint volume rank</th>
+    <th style="width:300px">Sample image</th>
+    <th class="tg-0pky">Comments</th>
+  </tr>
+</thead>
+<tbody>
+  <tr>
+    <td class="tg-0pky">BRISK</td>
+    <td class="tg-0pky">2722</td>
+    <td class="tg-0pky">1</td>
+    <td class="tg-0pky">![BRISK](/output/BRISK/brisk.gif) </td>
+    <td class="tg-0pky">Detects the largest number of keypoints. Thepoint have the largest meaningful neighbourhood. The majority of the keypoints are clustered around the outside of the lead vehicle, but also with some keypoints around the number plate and light clusters,  .Keypoints were also detected on the vehicles in the distance, both in the same lane as the ego vehicle and adjacent lanes</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">AKAZE</td>
+    <td class="tg-0pky">1666</td>
+    <td class="tg-0pky">2</td>
+    <td class="tg-0pky">![AKAZE](/output/AKAZE/akaze.gif) </td>
+    <td class="tg-0pky">Akaze detectsfewer keypoints than BRISK, with much smaller neigbourhhoods. There is a significant concentration around the outside of the lead vehicle, with a fairly uniform distribution in these areas. There are no keypoints detected in areas such as the number plate.Again the vehicles in adjacent vehicles have keypoints detected.</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">FAST</td>
+    <td class="tg-0pky">1501</td>
+    <td class="tg-0pky">3</td>
+    <td class="tg-0pky">![BRISK](/output/FAST/fast.gif) </td>
+    <td class="tg-0pky">FAST generates fewer keypoints, but is the fastest. There is again a decent concentration of keypoints around the outer of the lead vehicle. It can be clearly seen from the image that keypoints are detected on other vehicles and lane markings.</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">SIFT</td>
+    <td class="tg-0pky">1381</td>
+    <td class="tg-0pky">4</td>
+    <td class="tg-0pky">![SIFT](/output/SIFT/sift.gif) </td>
+    <td class="tg-0pky">SIFT detects keypoints on the rear screen of the proceeding vehicle. The size of the neighbourhoods vary from very small to medium size. </td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">SHITOMASI</td>
+    <td class="tg-0pky">1189</td>
+    <td class="tg-0pky">5</td>
+    <td class="tg-0pky">![SHITOMASI](/output/SHITOMASI/shitomasi.gif) </td>
+    <td class="tg-0pky">Shi-tomasi generates a cluster of keypoints around the number plate of the lead car, around the headrests visible through the rear screen and the edge of the vehicle.</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">ORB</td>
+    <td class="tg-0pky">1150</td>
+    <td class="tg-0pky">6</td>
+    <td class="tg-0pky">![ORB](/output/ORB/orb.gif) </td>
+    <td class="tg-0pky">Keypoints are concentrated into a number of highly dense areas. The main concentrations appear to be around the lights. The keypoints are so concenrtated that the keypoint plots almost appear as concentric circles. The neighbourhood areas are the largest of the detectors. Orb returns a deifned number of keypoints each time which my default is set to 500. This was not modifed during this exerces. Orb was the 2nd fastest detector. ORB was one of the few detectors not to detect keypoints on the leading vehicles shadow.</td>
+  </tr>
+  <tr>
+    <td class="tg-0pky">HARRIS</td>
+    <td class="tg-0pky">248</td>
+    <td class="tg-0pky">7</td>
+    <td class="tg-0pky">![HARRIS](/output/HARRIS/harris.gif) </td>
+    <td class="tg-0pky">Harris generates the fewest number of keypoints. Because it detects fewer keypoints there are less keypoints on the other vehicles as well. On the lead vehicle, there are keypoint clusters around the brake lights (both side and centre high mounted), but relatively few on the edge of the vehicle</td>
+  </tr>
+</tbody>
+</table>
+
+
+
+
+
+
+
+
+
+
+
 
 
 #### Findings
